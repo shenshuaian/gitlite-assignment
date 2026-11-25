@@ -47,7 +47,10 @@ public:
     static std::string currentCommitId();
 
     static std::string resolverevision(const std::string& rev);
-
+    static std::vector<std::string> listTags();
+    static std::string readTag(const std::string& name);
+    static void writeTag(const std::string& name, const std::string& commitId);
+    static std::vector<std::string> listWorkingFiles();
 private:
     // 列出目录下的普通文件名（用 stat 判断，避免依赖 dirent 的 d_type）
     static std::vector<std::string> listRegularFiles(const std::string& dir);

@@ -88,6 +88,7 @@ bool Repository::branchExists(const std::string& branch)
 {
     return Utils::isFile(branchPath(branch));
 }
+
 std::string Repository::readBranchHead(const std::string& branch)
 {
     if(!branchExists(branch))
@@ -113,8 +114,12 @@ std::string Repository::currentCommitId()
 
 std::vector<std::string> Repository::listBranches()
 {
-    // TODO: Subtask3 实现（需要列 refs/heads 下的普通文件）
-    return std::vector<std::string>();
+    return listRegularFiles(headsDir());
+}
+
+std::vector<std::string> Repository::listTags()
+{
+    return listRegularFiles(tagsDir());
 }
 
 std::string Repository::trimNewline(const std::string& text)
@@ -163,4 +168,43 @@ std::string Repository::resolverevision(const std::string& rev)
     }
 }
 
+std::vector<std::string> Repository::listRegularFiles(const std::string& dir)
+{
+    std::vector<std::string> names;
+    DIR *d=opendir(dir.c_str());
+    if(d==NULL)
+    return names;
+    else
+    {
+        struct dirent* e=NULL;
+        while((e = readdir(d)) != NULL)
+        {
+            std::string name(e->d_name);
+            if(name=="."||name=="..")
+            continue;
+           if(Utils::isFile(Utils::join(dir,name)))
+           {
+           names.push_back(name);
+           }
+        }
+        closedir(d);
+        std::sort(names.begin(), names.end()); 
+        return names;
+    }
+}
+
+std::string Repository::readTag(const std::string& name)
+{
+    return trimNewline(Utils::readContentsAsString(tagPath(name)));
+}
+
+void Repository::writeTag(const std::string& name, const std::string& commitId)
+{
+    Utils::writeContents(tagPath(name),commitId);
+}
+
+std::vector<std::string> Repository::listWorkingFiles()
+{
+    return listRegularFiles(".");
+}
 // TODO: 其余方法的实现由你自己补全
