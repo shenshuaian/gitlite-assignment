@@ -333,5 +333,5 @@ bool Utils::createDirectories(const std::string& path) {
         }
     }
     
-    return mkdir(path.c_str()) == 0 || isDirectory(path);
+    return mkdir(path.c_str(),0755) == 0 || isDirectory(path);
 }
